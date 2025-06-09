@@ -15,6 +15,7 @@ from .config import ConfigManager
 from .data_model import GeetestResult
 from .logger import log
 from .request import request
+from twocaptcha import TwoCaptcha
 
 _conf = ConfigManager.data_obj
 
@@ -131,3 +132,17 @@ def get_validate(
     except Exception:  # pylint: disable=broad-exception-caught
         log.exception("获取人机验证结果异常")
         return GeetestResult(challenge="", validate="")
+    
+def get_validate_by_2captcha(gt: str, challenge: str, websiteUrl: str) -> GeetestResult | None:  # pylint: disable=invalid-name
+    """获取人机验证结果(2captcha)"""
+    try:
+        solver = TwoCaptcha(apiKey=_conf.preference.twocaptcha_api_key)
+        geetest_data = solver.geetest(gt=gt,challenge=challenge,url=websiteUrl,userAgent=_conf.accounts.login_user_agent)
+        captchaId=geetest_data["captchaId"]
+        geetest = json.loads(geetest_data["code"])
+        challenge = geetest["geetest_challenge"]
+        validate = geetest["geetest_validate"]
+        return GeetestResult(challenge=challenge, validate=validate, taskId=captchaId)
+    except Exception:  # pylint: disable=broad-exception-caught
+        log.exception("获取人机验证结果异常")
+        return GeetestResult(challenge="", validate="",taskId="")

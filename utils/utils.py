@@ -13,11 +13,15 @@ from Crypto.PublicKey import RSA
 from Crypto.Util.Padding import pad
 from qrcode import QRCode, constants
 from tenacity import RetryError, Retrying, stop_after_attempt
+from twocaptcha import TwoCaptcha
 
-from .captcha import get_validate
+from .captcha import get_validate,get_validate_by_2captcha
 from .data_model import TokenResultHandler
 from .logger import log
 from .request import post
+from .config import ConfigManager
+_conf = ConfigManager.data_obj
+
 
 PUBLIC_KEY_PEM = """-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArxfNLkuAQ/BYHzkzVwtu
@@ -97,7 +101,10 @@ def get_token_by_captcha(url: str) -> Union[str, bool]:
         query_params = dict(parse_qsl(parsed_url.query))  # 解析URL参数
         gt = query_params.get("c", "")
         challenge = query_params.get("l", "")
-        geetest_data = get_validate(gt, challenge)
+        if _conf.preference.twocaptcha_api_key:
+            geetest_data = get_validate_by_2captcha(gt, challenge ,url)
+        else:
+            geetest_data = get_validate(gt, challenge)
         params = {
             "k": "3dc42a135a8d45118034d1ab68213073",
             "locale": "zh_CN",
