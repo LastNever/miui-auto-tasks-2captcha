@@ -137,12 +137,12 @@ def get_validate_by_2captcha(gt: str, challenge: str, websiteUrl: str) -> Geetes
     """获取人机验证结果(2captcha)"""
     try:
         solver = TwoCaptcha(apiKey=_conf.preference.two_captcha_api_key)
-        geetest_data = solver.geetest(gt=gt,challenge=challenge,url=websiteUrl,userAgent=_conf.accounts[0].user_agent)
+        geetest_data = solver.geetest(gt=gt,challenge=challenge,url=websiteUrl,userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0")
         captchaId=geetest_data["captchaId"]
         geetest = json.loads(geetest_data["code"])
         challenge = geetest["geetest_challenge"]
         validate = geetest["geetest_validate"]
         return GeetestResult(challenge=challenge, validate=validate, taskId=captchaId)
-    except Exception:  # pylint: disable=broad-exception-caught
-        log.exception("获取人机验证结果异常")
-        raise Exception("2captcha接口调用异常")
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        log.exception("2captcha接口调用异常")
+        raise Exception("2captcha接口调用异常") from e
