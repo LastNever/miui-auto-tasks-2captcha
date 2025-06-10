@@ -137,7 +137,7 @@ def get_validate_by_2captcha(gt: str, challenge: str, websiteUrl: str) -> Geetes
     """获取人机验证结果(2captcha)"""
     try:
         solver = TwoCaptcha(apiKey=_conf.preference.two_captcha_api_key)
-        geetest_data = solver.geetest(gt=gt,challenge=challenge,url=websiteUrl,userAgent=_conf.accounts[0].login_user_agent)
+        geetest_data = solver.geetest(gt=gt,challenge=challenge,url=websiteUrl,userAgent=_conf.accounts[0].user_agent)
         captchaId=geetest_data["captchaId"]
         geetest = json.loads(geetest_data["code"])
         challenge = geetest["geetest_challenge"]
