@@ -102,7 +102,7 @@ def get_token_by_captcha(url: str) -> Union[str, bool]:
         gt = query_params.get("c", "")
         challenge = query_params.get("l", "")
         if _conf.preference.two_captcha_api_key:
-            solver = TwoCaptcha(apiKey=_conf.preference.twocaptcha_api_key,server=_conf.preference.twocaptcha_server)
+            solver = TwoCaptcha(apiKey=_conf.preference.two_captcha_api_key,server=_conf.preference.twocaptcha_server)
             geetest_data = get_validate_by_2captcha(gt, challenge ,url)
         else:
             geetest_data = get_validate(gt, challenge)
