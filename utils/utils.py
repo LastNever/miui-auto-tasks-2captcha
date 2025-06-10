@@ -102,6 +102,7 @@ def get_token_by_captcha(url: str) -> Union[str, bool]:
         gt = query_params.get("c", "")
         challenge = query_params.get("l", "")
         if _conf.preference.two_captcha_api_key:
+            solver = TwoCaptcha(apiKey=_conf.preference.twocaptcha_api_key,server=_conf.preference.twocaptcha_server)
             geetest_data = get_validate_by_2captcha(gt, challenge ,url)
         else:
             geetest_data = get_validate(gt, challenge)
@@ -127,11 +128,14 @@ def get_token_by_captcha(url: str) -> Union[str, bool]:
         result = response.json()
         api_data = TokenResultHandler(result)
         if api_data.success:
+            solver.report(geetest_data.taskId,True)
             return api_data.token
         elif not api_data.data.get("result"):
+            solver.report(geetest_data.taskId,False)
             log.error("遇到人机验证码，无法获取TOKEN")
             return False
         else:
+            solver.report(geetest_data.taskId,False)
             log.error("遇到未知错误，无法获取TOKEN")
             return False
     except Exception:  # pylint: disable=broad-exception-caught
