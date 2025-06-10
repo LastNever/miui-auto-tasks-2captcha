@@ -101,7 +101,7 @@ def get_token_by_captcha(url: str) -> Union[str, bool]:
         query_params = dict(parse_qsl(parsed_url.query))  # 解析URL参数
         gt = query_params.get("c", "")
         challenge = query_params.get("l", "")
-        if _conf.preference.twocaptcha_api_key:
+        if _conf.preference.two_captcha_api_key:
             geetest_data = get_validate_by_2captcha(gt, challenge ,url)
         else:
             geetest_data = get_validate(gt, challenge)
