@@ -145,4 +145,4 @@ def get_validate_by_2captcha(gt: str, challenge: str, websiteUrl: str) -> Geetes
         return GeetestResult(challenge=challenge, validate=validate, taskId=captchaId)
     except Exception as e:  # pylint: disable=broad-exception-caught
         log.exception("2captcha接口调用异常")
-        raise Exception("2captcha接口调用异常") from e
+        raise Exception("2captcha接口调用异常")
