@@ -1,123 +1,131 @@
-# MIUI Task
-一个适用于 社区 4.0 模拟网络功能请求的脚本
+# MIUI Auto Tasks (2captcha)
 
-[![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu) 
-![GitHub](https://img.shields.io/github/license/0-8-4/miui-auto-tasks) 
-![Python](https://img.shields.io/badge/python-3.7+-blue) 
-![DockerHub](https://github.com/0-8-4/miui-auto-tasks/actions/workflows/docker-image.yml/badge.svg)
-[![CodeFactor](https://www.codefactor.io/repository/github/0-8-4/miui-auto-tasks/badge)](https://www.codefactor.io/repository/github/0-8-4/miui-auto-tasks)
+基于 [0-8-4/miui-auto-tasks](https://github.com/0-8-4/miui-auto-tasks) 的 fork，集成了 [2captcha](https://2captcha.com/) 付费验证码服务，解决原项目免费验证方案不稳定/无法使用的问题。
 
-## 我们收到反馈，部分用户已收到通知要求不得继续随意调用社区接口，否则社区账户将被永久封禁。<br/>鉴于以上情况，我们作为项目维护者建议停用脚本。<br/>感谢大家的支持，谢谢所有Star和Fork的人。
+![Python](https://img.shields.io/badge/python-3.7+-blue)
+![GitHub](https://img.shields.io/github/license/0-8-4/miui-auto-tasks)
 
-## **关于项目**:
+## Fork 修改内容
 
-  受`東雲研究所` 的某位大佬启发  
-  最初的源码由大佬授权 `0-8-4` 使用 `MIT` 开源   
-  项目初期由`0-8-4` 和 `TardisLX` 进行维护，现已逐渐转为社区驱动
-  我们认为社区无权在无任何回报的情况下强制要求内测用户完成 KPI 任务，因此诞生了这个脚本
+| 修改文件 | 说明 |
+| --- | --- |
+| `requirements.txt` | 新增 `2captcha-python==1.5.1` 依赖 |
+| `utils/captcha.py` | 新增 `get_validate_by_2captcha()` 函数，调用 2captcha Geetest API |
+| `utils/config.py` | `Preference` 类新增 `two_captcha_api_key` 配置项 |
+| `utils/data_model.py` | `GeetestResult` 新增 `taskId` 字段，用于上报验证结果 |
+| `utils/utils.py` | 验证码逻辑分支：有 key 走 2captcha，无 key 走原有逻辑；验证结果自动上报 |
+| `firstrun.sh` | 仓库路径适配 |
 
+**验证逻辑**：配置了 `two_captcha_api_key` 时自动使用 2captcha 服务，未配置时回退到原有的免费验证方案。验证成功/失败会自动上报给 2captcha（正确反馈可降低费用）。
 
-## **重要声明**:
-- 虽然理论上本脚本不会影响社区账户安全，但您需要自行承担使用本脚本的后果
+## 快速开始
 
-- **我们不鼓励，不支持一切商业使用**
-  - 鉴于项目的特殊性，我们可能在任何时间 **停止更新** 或 **删除项目**
+### 1. 获取 2captcha API Key
 
+前往 [2captcha.com](https://2captcha.com/) 注册账号并充值，获取 API Key。
 
-### **使用说明**：
-项目支持本地、Docker、青龙面板等部署方式，详细使用说明请参见 **[WiKi](https://github.com/0-8-4/miui-auto-tasks/wiki)**
+### 2. 安装依赖
 
-
-### **项目依赖**：
-  1. 需要前往 Python 官网自行下载自己系统对应的 Python 版本，或使用自己系统对应的包管理安装，推荐至少 Python 3.7 以上
-
-  ```
-  https://www.python.org/downloads/
-  ```
-
-  2. Python 3 安装完成之后，请在 **项目目录** 执行以下命令安装所需模块
-  ```bash
-  pip install -r requirements.txt
-  ```
-  **推荐**
-  ```bash
-  pip install pdm
-  pdm install
-  ```
-  注意：你可能需要使用管理员权限运行命令行
-
-### **项目介绍**：  
-- [x] 支持 多账号 配置
-- [x] 支持 Docker 部署
-- [x] 支持 青龙面板 部署
-- [x] 支持 自动登录账号刷新社区 Cookie 以便于实现自动化   
-- [x] 绝大多数功能均可在配置文件中自行开关启用   
-
-&#x26A0; 请注意，配置文件默认禁用了 MIUI Task 绝大多数模拟网络请求的功能能力，请注意修改配置文件按需启用。根据社区相关规则，模拟这些功能的网络请求可能存在一定风险。您需要自行承担使用本脚本的后果
-
-#### **其他**：  
-* 在使用本脚本时请临时关闭网络代理工具及广告拦截程序  
-* 在服务器上使用前建议先使用服务器IP登录 `https://account.xiaomi.com`  
-* 如需定时自动化建议配合 Python3 及 Crontab 使用  
-* **欢迎提供有关的思路，提交BUG以及更多完成社区其他任务方式，我们会认真对待~**
-
-
-#### **贡献**：
-
-如果你在使用过程中发现任何问题，可以使用模板 [提交 issue](https://github.com/0-8-4/miui-auto-tasks/issues/new) 或自行 Fork 修改后提交 Pull request
-
-如果你要提交 Pull request，请确保你的代码风格和项目已有的代码保持一致，遵循 [PEP 8](https://www.python.org/dev/peps/pep-0008) ，变量命名清晰，有适当的注释
-
-
-# **License**
-```
-MIT License
-
-Copyright (c) 2021 東雲研究所
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+```bash
+pip install -r requirements.txt
 ```
 
-# **鸣谢**
-## 项目
+### 3. 配置
 
-感谢由 [Xiaomi-Community-AutoTask](https://github.com/CMDQ8575/Xiaomi-Community-AutoTask) 启发的部分相关功能代码
+首次运行会自动生成 `data/config.json`（或 `data/config.yaml`），编辑配置文件：
 
-## 社区
+```json
+{
+    "preference": {
+        "two_captcha_api_key": "你的2captcha-API-Key"
+    },
+    "accounts": [
+        {
+            "uid": "你的小米账号ID",
+            "password": "密码或MD5",
+            "login_user_agent": "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Safari/537.36",
+            "CheckIn": true,
+            "BrowseUserPage": true,
+            "BrowsePost": true
+        }
+    ]
+}
+```
 
-感谢以下贡献者对本项目做出的贡献
+**配置说明**：
 
-<a href="https://github.com/0-8-4/miui-auto-tasks/graphs/contributors">
+| 字段 | 说明 |
+| --- | --- |
+| `preference.two_captcha_api_key` | 2captcha API Key，留空则使用免费验证方案 |
+| `accounts[].uid` | 小米账号 ID（非手机号） |
+| `accounts[].password` | 密码明文或 32 位 MD5 哈希 |
+| `accounts[].login_user_agent` | 登录用 User-Agent，**必须为手机端 UA**（**必填，需手动配置**） |
+| `accounts[].cookies` | 登录后的 cookies（可选，有则跳过登录） |
+| `accounts[].CheckIn` | 社区签到开关 |
+| `accounts[].BrowseUserPage` | 浏览个人主页开关 |
+| `accounts[].BrowsePost` | 浏览帖子开关 |
+| `accounts[].BrowseVideoPost` | 浏览视频帖子开关 |
+| `accounts[].ThumbUp` | 点赞帖子开关 |
+| `accounts[].WxSign` | 微信小程序签到开关 |
 
-  <img src="https://contrib.rocks/image?repo=0-8-4/miui-auto-tasks" />
+多账号在 `accounts` 数组中添加多个对象即可。
 
-</a>
+### 4. 运行
 
-![Alt](https://repobeats.axiom.co/api/embed/073d4816527b3720a03cb44fa876fe0de0216124.svg "Repobeats analytics image")
+```bash
+python miuitask.py
+```
 
-<br><br>
+## Docker 部署
 
-### 本项目所有贡献者感谢所有Star了本项目的人
+```bash
+# 构建镜像
+docker build -t miui-auto-tasks .
 
-[![Star History Chart](https://api.star-history.com/svg?repos=0-8-4/miui-auto-tasks&type=Date)](https://star-history.com/#0-8-4/miui-auto-tasks&Date)
+# 运行容器（首次运行后编辑 data/config.json 配置参数）
+docker run -d \
+    --name miui-auto-tasks \
+    -v $(pwd)/data:/srv/data \
+    -v $(pwd)/logs:/srv/logs \
+    miui-auto-tasks
+```
 
-## JetBrains 
+容器内通过 crontab 定时执行，每天凌晨 4 点运行，随机延迟 0-30 分钟。首次运行后进入容器编辑配置：
 
-特别感谢 [JetBrains](https://www.jetbrains.com/) 为开源项目提供免费的 [PyCharm](https://www.jetbrains.com/pycharm/) 等 IDE 的授权  
-[<img src=".github/md_pic/jetbrains-variant-3.png" width="200"/>](https://www.jetbrains.com/)
+```bash
+docker exec -it miui-auto-tasks vi /srv/data/config.json
+```
+
+## 青龙面板部署
+
+1. **订阅仓库**：青龙面板 -> 订阅管理 -> 添加订阅
+
+   - 类型：GitHub
+   - 链接：`https://github.com/LastNever/miui-auto-tasks-2captcha`
+   - 分支：`master`
+
+2. **运行环境配置**：订阅成功后，青龙会自动拉取 `firstrun.sh`，首次运行会自动安装依赖。运行一次后**禁用**该任务。
+
+3. **配置参数**：前往 脚本管理 -> `LastNever_miui-auto-tasks-2captcha_master` -> `data` -> `config.json` 中编辑配置。
+
+4. **添加定时任务**：
+
+   - 命令：`task LastNever_miui-auto-tasks-2captcha_master/miuitask.py`
+   - 定时规则：`0 4 * * *`（每天凌晨 4 点，建议添加随机延迟）
+
+## 注意事项
+
+- 使用前请临时关闭网络代理和广告拦截
+- 首次运行必须手动配置 `login_user_agent`（**手机端** User-Agent，不可使用桌面浏览器 UA），登录成功后 cookie 会自动写入配置文件，后续运行无需重复登录
+- 服务器/容器部署时，首次运行如密码登录失败会自动触发二维码扫码登录（终端显示二维码）
+- 配置文件默认禁用了大部分功能，请按需启用
+- 使用本脚本产生的后果需自行承担
+
+## 原项目
+
+- 项目来源：[0-8-4/miui-auto-tasks](https://github.com/0-8-4/miui-auto-tasks)
+- 详细使用说明请查看原项目：[WiKi](https://github.com/0-8-4/miui-auto-tasks/wiki)
+
+## License
+
+[MIT License](LICENSE) - Copyright (c) 2021 東雲研究所
